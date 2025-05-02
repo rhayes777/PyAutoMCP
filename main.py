@@ -1,3 +1,12 @@
+import sys
+
+import os
+
+from autoconf.dictable import to_dict
+
+sys.path.insert(0, "/Users/other/autolens/fit")
+
+
 from typing import List
 
 import json
@@ -28,10 +37,10 @@ async def list_searches(directory: str) -> str:
             {
                 "name": search.name,
                 "directory": str(search.directory),
-                "instance": search.instance,
+                "instance": to_dict(search.instance),
                 "log_evidence": search.samples.log_evidence,
             }
-            for search in aggregator.searches
+            for search in aggregator
         ]
     )
 
