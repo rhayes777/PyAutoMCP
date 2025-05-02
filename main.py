@@ -1,12 +1,13 @@
+from typing import List
+
 import json
 
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
-import argparse
-
-from autofit import SearchOutput
+from autofit import SearchOutput, AggregateImages
 from autofit.aggregator import Aggregator
+from autofit.aggregator.summary.aggregate_images import SubplotFit
 
 # Initialize FastMCP server
 mcp = FastMCP("output_inspector")
@@ -19,28 +20,76 @@ USER_AGENT = "weather-app/1.0"
 @mcp.tool()
 async def list_searches(directory: str) -> str:
     """
-    List the directories of all searches in the given directory.
+    Get details of all searches in the directory.
     """
     aggregator = Aggregator.from_directory(Path(directory))
-    return json.dumps([search.directory for search in aggregator.searches])
+    return json.dumps(
+        [
+            {
+                "name": search.name,
+                "directory": str(search.directory),
+                "instance": search.instance,
+                "log_evidence": search.samples.log_evidence,
+            }
+            for search in aggregator.searches
+        ]
+    )
 
 
 @mcp.tool()
-async def get_model_info(directory: str) -> str:
+async def get_model_details(directory: str) -> str:
     """
     Get a description of the model that was optimized.
     """
-    with open(Path(directory) / "model.info") as f:
-        return f.read()
+    return json.dumps(SearchOutput(Path(directory)).model.dict())
 
 
 @mcp.tool()
 async def get_model_result(directory: str) -> str:
     """
-    Get a description of the result of optimization.
+    Get a description of the posterior model resultant from the optimization.
     """
     with open(Path(directory) / "model.result") as f:
         return f.read()
+
+
+@mcp.tool()
+async def combine_images(
+    filename: str,
+    directories: List[str],
+    image_names: List[str],
+):
+    """
+    Combine the images from the searches into a single image.
+
+    Parameters
+    ----------
+    filename
+        The name of the output file.
+    directories
+        The directories containing the searches.
+    image_names
+        The names of the images to combine. Must be one or more of the following:
+
+            Data
+            DataSourceScaled
+            SignalToNoiseMap
+            ModelData
+            LensLightModelData
+            LensLightSubtractedImage
+            SourceModelData
+            SourcePlaneZoomed
+            NormalizedResidualMap
+            NormalizedResidualMapOneSigma
+            ChiSquaredMap
+            SourcePlaneNoZoom
+    """
+    aggregate = AggregateImages(
+        [SearchOutput(Path(directory)) for directory in directories],
+    )
+    aggregate.extract_image(
+        [SubplotFit[name] for name in image_names],
+    ).save(filename)
 
 
 # @mcp.tool()
