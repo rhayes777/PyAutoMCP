@@ -62,12 +62,12 @@ async def combine_images(
     image_names: List[str],
 ):
     """
-    Combine the images from the searches into a single image.
+    Combine the images from the searches into a single image and write it to the specified filename.
 
     Parameters
     ----------
     filename
-        The name of the output file.
+        The filename to write the combined image to.
     directories
         The directories containing the searches.
     image_names
