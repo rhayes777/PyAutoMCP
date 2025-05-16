@@ -16,12 +16,7 @@ from autofit import SearchOutput, AggregateImages
 from autofit.aggregator import Aggregator
 from autofit.aggregator.summary.aggregate_images import SubplotFit
 
-# Initialize FastMCP server
 mcp = FastMCP("output_inspector")
-
-# Constants
-NWS_API_BASE = "https://api.weather.gov"
-USER_AGENT = "weather-app/1.0"
 
 
 @mcp.tool()
