@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
-from autofit import SearchOutput, AggregateImages
+from autofit import SearchOutput, AggregateImages, AggregateFITS, FITSFit
 from autofit.aggregator import Aggregator
 from autofit.aggregator.summary.aggregate_images import SubplotFit
 
@@ -93,6 +93,38 @@ async def combine_images(
     aggregate.extract_image(
         [SubplotFit[name] for name in image_names],
     ).save(filename)
+
+
+@mcp.tool()
+async def combine_fits(
+    filename: str,
+    directories: List[str],
+    fits_names: List[str],
+):
+    """
+    Combine the .fits files from the searches into a single .fits file and write it to the specified filename.
+
+    Parameters
+    ----------
+    filename
+        The filename to write the combined image to.
+    directories
+        The directories containing the searches.
+    fits_names
+        The names of the fits to combine. Must be one or more of the following:
+            ModelData
+            ResidualMap
+            NormalizedResidualMap
+            ChiSquaredMap
+    """
+    aggregate = AggregateFITS(
+        [SearchOutput(Path(directory)) for directory in directories],
+    )
+    Path(filename).parent.mkdir(parents=True, exist_ok=True)
+    aggregate.extract_fits([FITSFit[name] for name in fits_names]).writeto(
+        filename,
+        overwrite=True,
+    )
 
 
 # @mcp.tool()
