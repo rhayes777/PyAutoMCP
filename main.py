@@ -89,6 +89,7 @@ async def combine_images(
     aggregate = AggregateImages(
         [SearchOutput(Path(directory)) for directory in directories],
     )
+    Path(filename).parent.mkdir(parents=True, exist_ok=True)
     aggregate.extract_image(
         [SubplotFit[name] for name in image_names],
     ).save(filename)
