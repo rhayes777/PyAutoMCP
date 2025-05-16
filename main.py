@@ -1,7 +1,5 @@
 import sys
 
-import os
-
 from autoconf.dictable import to_dict
 
 sys.path.insert(0, "/Users/other/autolens/fit")
