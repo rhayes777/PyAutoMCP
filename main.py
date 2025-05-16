@@ -127,24 +127,5 @@ async def combine_fits(
     )
 
 
-# @mcp.tool()
-# async def get_samples(directory: str) -> str:
-#     """
-#     Get the samples from the optimization.
-#     """
-#     search_output = SearchOutput(Path(directory))
-#
-#     samples = search_output.samples
-#     path = Path("/tmp/samples.csv")
-#     samples.write_table(path)
-#
-#     with open(path) as file:
-#         csv_data = file.read()
-#
-#     path.unlink()
-#
-#     return csv_data
-
-
 if __name__ == "__main__":
     mcp.run(transport="stdio")
