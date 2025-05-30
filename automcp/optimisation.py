@@ -5,7 +5,7 @@ import autolens as al
 import autofit as af
 from pathlib import Path
 
-from autoconf.dictable import from_json, to_dict
+from autoconf.dictable import to_dict, from_dict
 from autogalaxy.profiles.mass import MassProfile
 
 
@@ -45,7 +45,7 @@ def register_profiles(mcp: FastMCP):
 async def optimise(
     name: str,
     dataset_path: str,
-    model_json: str,
+    model_json: dict,
 ) -> str:
     """
     Run a non-linear optimisation on the given dataset using the model specified in the JSON file.
@@ -73,7 +73,7 @@ async def optimise(
 
     analysis = al.AnalysisImaging(dataset=dataset)
     search = af.LBFGS(name=name)
-    model = from_json(model_json)
+    model = from_dict(model_json)
 
     result = search.fit(model, analysis)
 

@@ -201,6 +201,15 @@ optimise the source galaxy in a subsequent optimisation.
 
 Optimisations can take a long time to run, depending on the complexity of the model and the size of the dataset. It is
 important to clarify the user's needs before running an optimisation.
+
+Dataset paths point to a directory containing the dataset files. The dataset should contain the following files:
+- `data.fits`: The data to be fitted.
+- `noise_map.fits`: The noise map of the data.
+- `psf.fits`: The point spread function of the data.
+- `mask.fits`: The mask of the data (optional).
+
+Output from an optimisation is stored in a directory named after the optimisation task.
+
 """,
 )
 
