@@ -31,8 +31,11 @@ def register_profiles(mcp: FastMCP):
                 "name": name,
             }
 
-            @mcp.resource(path, name=name, description=doc)
+            @mcp.tool(name, description=doc)
             def profile_resource():
+                """
+                Obtain information about the profile class, including its model and instance.
+                """
                 return resource_dict
 
         except Exception as e:

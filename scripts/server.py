@@ -1,4 +1,4 @@
-from automcp import aggregate, optimisation
+from automcp import optimisation
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP(
