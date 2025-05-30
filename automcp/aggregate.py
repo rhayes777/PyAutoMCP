@@ -1,25 +1,24 @@
-import sys
-
 from autoconf.dictable import to_dict
-
-sys.path.insert(0, "/Users/other/autolens/fit")
-
 
 from typing import List
 
 import json
 
 from pathlib import Path
-from mcp.server.fastmcp import FastMCP
 
 from autofit import SearchOutput, AggregateImages, AggregateFITS, FITSFit
 from autofit.aggregator import Aggregator
 from autofit.aggregator.summary.aggregate_images import SubplotFit
 
-mcp = FastMCP("output_inspector")
+
+def add_tools(mcp):
+    mcp.tool()(list_searches)
+    mcp.tool()(get_model_details)
+    mcp.tool()(get_model_result)
+    mcp.tool()(combine_images)
+    mcp.tool()(combine_fits)
 
 
-@mcp.tool()
 async def list_searches(directory: str) -> str:
     """
     Get details of all searches in the directory.
@@ -38,7 +37,6 @@ async def list_searches(directory: str) -> str:
     )
 
 
-@mcp.tool()
 async def get_model_details(directory: str) -> str:
     """
     Get a description of the model that was optimized.
@@ -46,7 +44,6 @@ async def get_model_details(directory: str) -> str:
     return json.dumps(SearchOutput(Path(directory)).model.dict())
 
 
-@mcp.tool()
 async def get_model_result(directory: str) -> str:
     """
     Get a description of the posterior model resultant from the optimization.
@@ -55,7 +52,6 @@ async def get_model_result(directory: str) -> str:
         return f.read()
 
 
-@mcp.tool()
 async def combine_images(
     filename: str,
     directories: List[str],
@@ -95,7 +91,6 @@ async def combine_images(
     ).save(filename)
 
 
-@mcp.tool()
 async def combine_fits(
     filename: str,
     directories: List[str],
@@ -125,7 +120,3 @@ async def combine_fits(
         filename,
         overwrite=True,
     )
-
-
-if __name__ == "__main__":
-    mcp.run(transport="stdio")
