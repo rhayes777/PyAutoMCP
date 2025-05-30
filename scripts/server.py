@@ -169,7 +169,31 @@ look like this:
   }
 }
 
-Example instance and model JSONs can be found in their respective component:// resources.
+Here is how an instance of the ExponentialCoreSph light profile can be defined:
+
+{
+  "type": "instance",
+  "class_path": "autogalaxy.profiles.light.linear.exponential_core.ExponentialCoreSph",
+  "arguments": {
+    "centre": {
+      "type": "tuple",
+      "values": [
+        0.0,
+        0.0
+      ]
+    },
+    "radius_break": 0.01,
+    "effective_radius": 0.6,
+    "alpha": 3.0,
+    "gamma": 0.25
+  }
+}
+
+In this case all parameters are fixed, and the optimisation will not change them.
+
+Every element in the model JSON MUST have a `type` field, which indicates whether it is a model, instance, collection etc.
+
+The top level of the model JSON should be a collection, which contains galaxies. 
 
 Parameters associated with the model maybe be given as floats or as prior dictionaries.
 
