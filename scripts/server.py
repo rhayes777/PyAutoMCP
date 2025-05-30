@@ -210,10 +210,11 @@ Dataset paths point to a directory containing the dataset files. The dataset sho
 
 Output from an optimisation is stored in a directory named after the optimisation task.
 
+When a user asks for a model ensure that some of the models are free parameters, otherwise the optimisation will not run.
 """,
 )
 
-aggregate.add_tools(mcp)
+# aggregate.add_tools(mcp)
 optimisation.add(mcp)
 
 if __name__ == "__main__":
