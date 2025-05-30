@@ -1,17 +1,56 @@
+import json
+
 from mcp.server import FastMCP
 import autolens as al
 import autofit as af
 from pathlib import Path
 
-from autoconf.dictable import from_json
+from autoconf.dictable import from_json, to_dict
+from autogalaxy.profiles.mass import MassProfile
 
 
 def add(mcp: FastMCP):
     mcp.tool()(optimise)
-    mcp.resource("model_json")
+    mcp.resource(
+        "/model_schema",
+        description="Describes how to construct a model JSON",
+    )(model_schema)
+    register_profiles(mcp)
 
 
-async def optimise(name: str, dataset_path: str, model_json: str) -> str:
+def register_profiles(mcp: FastMCP):
+    def register_profile(profile_class, path=""):
+        doc = profile_class.__doc__
+        name = profile_class.__name__
+
+        path = f"{path}/{name}"
+
+        @mcp.resource(path, name=name, description=doc)
+        def profile_resource():
+            instance = profile_class()
+            model = af.Model(profile_class)
+
+            return json.dumps(
+                {
+                    "model": to_dict(model),
+                    "instance": to_dict(instance),
+                    "doc": doc,
+                    "name": name,
+                }
+            )
+
+        for subclass in profile_class.__subclasses__():
+            register_profile(subclass, path)
+
+    register_profile(al.LightProfile)
+    register_profile(MassProfile)
+
+
+async def optimise(
+    name: str,
+    dataset_path: str,
+    model_json: str,
+) -> str:
     """
     Run a non-linear optimisation on the given dataset using the model specified in the JSON file.
 
@@ -53,8 +92,10 @@ def model_schema():
     The schema below describes how to construct a model JSON for a simple lensing system with a single lens galaxy 
     and a single source galaxy.
     
-    <MassProfile> and <LightProfile> should be replaced with the JSON representations of specific mass and light 
-    profile classes you want to use, such as `PowerLaw`, `Isothermal`, `Sersic`, etc.
+    <MassProfile> and <LightProfile> should be replaced with the JSON representations of either a model or instance of 
+    the specific mass and light profile classes you want to use, such as `PowerLaw`, `Isothermal`, `Sersic`, etc.
+    
+    A model has free parameters that can be optimised, while an instance has fixed parameters.
     
     {
       "type": "collection",
