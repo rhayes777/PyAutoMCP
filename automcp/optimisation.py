@@ -12,14 +12,14 @@ from autogalaxy.profiles.mass import MassProfile
 def add(mcp: FastMCP):
     mcp.tool()(optimise)
     mcp.resource(
-        "/model_schema",
+        "instruction://model_schema",
         description="Describes how to construct a model JSON",
     )(model_schema)
     register_profiles(mcp)
 
 
 def register_profiles(mcp: FastMCP):
-    def register_profile(profile_class, path=""):
+    def register_profile(profile_class, path="profile:/"):
         doc = profile_class.__doc__
         name = profile_class.__name__
 
