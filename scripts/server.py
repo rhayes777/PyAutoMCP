@@ -17,6 +17,8 @@ Models may contain nested models or instances, allowing for complex lensing syst
 
 Models and instances can be defined in JSON format, which allows for easy sharing and modification of models.
 Schemas use placeholders like `<MassProfile>` and `<LightProfile>` to indicate where child JSON objects should be inserted.
+Every nested JSON object must have a `type` field that indicates whether it is a model, instance, collection, etc.
+If in doubt, assume the type is `collection`.
 
 For example:
 
