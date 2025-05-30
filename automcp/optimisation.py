@@ -48,17 +48,19 @@ def register_profiles(mcp: FastMCP):
     register_profile(MassProfile)
 
 
-def _convert_dict_to_model(obj) -> af.AbstractPriorModel:
-    if isinstance(obj, dict):
-        collection = af.Collection()
-        for key, value in obj.items():
-            if isinstance(value, dict):
-                collection[key] = _convert_dict_to_model(value)
-            else:
-                collection[key] = value
-        return collection
+def add_type(model_dict):
+    if isinstance(model_dict, dict):
+        if "type" not in model_dict:
+            return {
+                "type": "collection",
+                "arguments": {
+                    key: add_type(value) for key, value in model_dict.items()
+                },
+            }
+    elif isinstance(model_dict, list):
+        return [add_type(item) for item in model_dict]
 
-    return obj
+    return model_dict
 
 
 async def optimise(
@@ -92,7 +94,7 @@ async def optimise(
 
     analysis = al.AnalysisImaging(dataset=dataset)
     search = af.LBFGS(name=name)
-    model = _convert_dict_to_model(from_dict(model_json))
+    model = from_dict(add_type(model_json))
 
     result = search.fit(model, analysis)
 
