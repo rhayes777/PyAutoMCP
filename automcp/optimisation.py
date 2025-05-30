@@ -21,25 +21,53 @@ def register_profiles(mcp: FastMCP):
 
         path = f"{path}/{name}"
 
-        @mcp.resource(path, name=name, description=doc)
-        def profile_resource():
+        try:
             instance = profile_class()
             model = af.Model(profile_class)
+            resource_dict = {
+                "model": to_dict(model),
+                "instance": to_dict(instance),
+                "doc": doc,
+                "name": name,
+            }
 
-            return json.dumps(
-                {
-                    "model": to_dict(model),
-                    "instance": to_dict(instance),
-                    "doc": doc,
-                    "name": name,
-                }
-            )
+            @mcp.resource(path, name=name, description=doc)
+            def profile_resource():
+                return resource_dict
+
+        except Exception as e:
+            print(f"Failed to register profile {name} at path {path}: {e}")
 
         for subclass in profile_class.__subclasses__():
             register_profile(subclass, path)
 
     register_profile(al.LightProfile)
     register_profile(MassProfile)
+
+
+class DummyMCP:
+    """
+    A dummy MCP class for testing purposes.
+    This class is not used in production and is only here to satisfy the type hints.
+    """
+
+    def tool(self):
+        return self
+
+    def __call__(self, func):
+        return func
+
+    def resource(self, path, name=None, description=None):
+        print(path, name, description)
+
+        def decorator(func):
+            print(func())
+            return func
+
+        return decorator
+
+
+register_profiles(DummyMCP())  # Register profiles with a dummy MCP for testing purposes
 
 
 async def optimise(
