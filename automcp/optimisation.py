@@ -11,15 +11,11 @@ from autogalaxy.profiles.mass import MassProfile
 
 def add(mcp: FastMCP):
     mcp.tool()(optimise)
-    mcp.resource(
-        "instruction://model_schema",
-        description="Describes how to construct a model JSON",
-    )(model_schema)
     register_profiles(mcp)
 
 
 def register_profiles(mcp: FastMCP):
-    def register_profile(profile_class, path="profile:/"):
+    def register_profile(profile_class, path="component:/"):
         doc = profile_class.__doc__
         name = profile_class.__name__
 
@@ -82,51 +78,3 @@ async def optimise(
     result = search.fit(model, analysis)
 
     return result.paths.output_path
-
-
-def model_schema():
-    return """
-    The model is a collection of galaxies, each with a lens and source galaxy. 
-    The lens galaxy has a mass profile, and the source galaxy has a light profile.
-    
-    The schema below describes how to construct a model JSON for a simple lensing system with a single lens galaxy 
-    and a single source galaxy.
-    
-    <MassProfile> and <LightProfile> should be replaced with the JSON representations of either a model or instance of 
-    the specific mass and light profile classes you want to use, such as `PowerLaw`, `Isothermal`, `Sersic`, etc.
-    
-    A model has free parameters that can be optimised, while an instance has fixed parameters.
-    
-    {
-      "type": "collection",
-      "arguments": {
-        "galaxies": {
-          "type": "collection",
-          "arguments": {
-            "lens": {
-              "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-              "type": "model",
-              "arguments": {
-                "redshift": {
-                  "type": "Constant",
-                  "value": 0.5
-                },
-                "mass": <MassProfile>,
-              }
-            },
-            "source": {
-              "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-              "type": "model",
-              "arguments": {
-                "redshift": {
-                  "type": "Constant",
-                  "value": 1.0
-                },
-                "bulge": <LightProfile>,
-              }
-            }
-          }
-        }
-      }
-    }
-    """
