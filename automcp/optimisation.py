@@ -93,7 +93,7 @@ async def optimise(
     )
 
     analysis = al.AnalysisImaging(dataset=dataset)
-    search = af.LBFGS(name=name)
+    search = af.LBFGS(name=name, path_prefix="mcp")
     model = from_dict(add_type(model_json))
 
     result = search.fit(model, analysis)
