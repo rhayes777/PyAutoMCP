@@ -1,0 +1,9 @@
+AutoLens is a library that facilitates modelling, simulation, and analysis of strong gravitational lensing systems.
+
+The AutoLens server provides tools for interaction with the AutoLens library, allowing users to perform tasks such as:
+- **Modeling**: Create and manipulate lens models to fit observational data.
+- **Simulation**: Generate synthetic lensing data based on specified models.
+- **Analysis**: Analyze lensing data to extract physical parameters and properties of the lensing system.
+- **Visualization**: Visualize lensing models and data to aid in interpretation and understanding.
+
+A dataset is referenced by a path to a directory on the filesystem. This variable is always called `dataset_path`.
