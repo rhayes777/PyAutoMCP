@@ -87,6 +87,9 @@ async def get_profile_example(
     """
     Search for example instances of a mass or light profile based on a search string and profile type.
 
+    It is essential to use this tool before constructing profiles, galaxies, or tracers, as it provides example
+    that can be used to understand the parameters and structure of the profiles.
+
     Parameters
     ----------
     search_string
