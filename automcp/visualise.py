@@ -95,7 +95,6 @@ async def visualize_grid(
 
 class Component(BaseModel):
     type: str
-    class_path: Optional[str] = None
     arguments: dict
 
     model_config = {"ignored_types": (cached_property,)}
@@ -111,8 +110,13 @@ class Component(BaseModel):
         )
 
 
+class Instance(Component):
+    class_path: str
+    type: str = "instance"
+
+
 async def visualize_light_profile(
-    light_profile: Component,
+    light_profile: Instance,
     grid: UniformGrid2D,
     title: str = "Light Profile Visualization",
 ):
@@ -122,7 +126,7 @@ async def visualize_light_profile(
     Parameters
     ----------
     light_profile
-        A Model describing an instance of a light profile.
+        An instance describing an instance of a light profile.
     grid
         The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
         Reasonable values for shape_native are (100, 100) or (200, 200) with pixel_scales of 0.1.
