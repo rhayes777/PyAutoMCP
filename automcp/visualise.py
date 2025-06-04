@@ -1,5 +1,6 @@
-from fastmcp import FastMCP, Image
-from PIL import Image as PILImage
+from typing import Optional
+
+from fastmcp import FastMCP
 from pydantic import BaseModel
 
 import autolens as al
@@ -10,11 +11,6 @@ import pydantic
 
 from autoconf import cached_property
 from autoconf.dictable import from_dict
-
-import numpy as np
-import matplotlib.pyplot as plt
-import io
-import base64
 
 
 def dataset_from_path(dataset_path: str):
@@ -119,27 +115,11 @@ class Instance(Component):
     type: str = "instance"
 
 
-def array_to_base64_png(arr: np.ndarray) -> str:
-    # Ensure the array is 2D or 3D with shape (H, W, 3) or (H, W, 4)
-    if arr.ndim == 2:
-        cmap = "gray"
-    else:
-        cmap = None
-
-    # Create a PNG image in memory
-    buf = io.BytesIO()
-    plt.imsave(buf, arr, format="png", cmap=cmap)
-    buf.seek(0)
-
-    # Encode image as base64
-    base64_png = base64.b64encode(buf.read()).decode("utf-8")
-    return base64_png
-
-
 async def visualize_light_profile(
     light_profile: Instance,
     grid: UniformGrid2D,
-) -> Image:
+    title: str = "Light Profile Visualization",
+):
     """
     Visualize a light profile.
 
@@ -150,17 +130,14 @@ async def visualize_light_profile(
     grid
         The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
         Reasonable values for shape_native are (100, 100) or (200, 200) with pixel_scales of 0.1.
-
-    Returns
-    -------
-    image
-        An Image object containing the light profile visualized as a PNG image.
+    title
+        The title of the plot.
     """
     light_profile = light_profile.instance
     image = light_profile.image_2d_from(grid=grid.instance)
 
-    buffer = io.BytesIO()
-    PILImage.fromarray(image.native.array).convert("L").save(buffer, format="PNG")
-    img_bytes = buffer.getvalue()
-
-    return Image(data=img_bytes, format="png")
+    array_plotter = aplt.Array2DPlotter(
+        array=image,
+    )
+    array_plotter.set_title(title)
+    array_plotter.figure_2d()
