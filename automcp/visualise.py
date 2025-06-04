@@ -26,7 +26,7 @@ def dataset_from_path(dataset_path: str):
 def add(mcp_server: FastMCP):
     mcp_server.add_tool(visualize_dataset)
     mcp_server.add_tool(visualize_grid)
-    mcp_server.add_tool(visualize_light_profile)
+    mcp_server.add_tool(visualize_instance)
 
 
 async def visualize_dataset(
@@ -115,26 +115,26 @@ class Instance(Component):
     type: str = "instance"
 
 
-async def visualize_light_profile(
-    light_profile: Instance,
+async def visualize_instance(
+    instance: Instance,
     grid: UniformGrid2D,
     title: str = "Light Profile Visualization",
 ):
     """
-    Visualize a light profile.
+    Visualize a light profile, galaxy or tracer on a grid.
 
     Parameters
     ----------
-    light_profile
-        An instance describing an instance of a light profile.
+    instance
+        A Component instance containing the type and arguments for the object to visualize.
     grid
         The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
         Reasonable values for shape_native are (100, 100) or (200, 200) with pixel_scales of 0.1.
     title
         The title of the plot.
     """
-    light_profile = light_profile.instance
-    image = light_profile.image_2d_from(grid=grid.instance)
+    instance = instance.instance
+    image = instance.image_2d_from(grid=grid.instance)
 
     array_plotter = aplt.Array2DPlotter(
         array=image,

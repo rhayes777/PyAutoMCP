@@ -27,3 +27,64 @@ model - this is an example of how that component can be represented as a model.
 instance - this is an example of how that component can be represented as an instance.
 doc - describes the component and its usage.
 name - the name of the component.
+
+A galaxy is a component that represents a galaxy in the lensing system.
+
+It has a redshift argument and can contain light profiles and mass profiles.
+These profiles are given as arguments and can have any name in the dictionary.
+
+Here is an example of a galaxy component with a bulge and a disk light profile:
+
+{
+    "type": "instance",
+    "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+    "arguments": {
+        "redshift": 0.5,
+        "bulge": {
+            "type": "instance",
+            "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
+            "arguments": {
+                "ell_comps": {
+                    "type": "tuple",
+                    "values": [
+                        0.0,
+                        0.111111
+                    ]
+                },
+                "intensity": 1.0,
+                "sersic_index": 2.5,
+                "centre": {
+                    "type": "tuple",
+                    "values": [
+                        0.0,
+                        0.0
+                    ]
+                },
+                "effective_radius": 1.0
+            }
+        },
+        "disk": {
+            "type": "instance",
+            "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
+            "arguments": {
+                "ell_comps": {
+                    "type": "tuple",
+                    "values": [
+                        0.0,
+                        0.3
+                    ]
+                },
+                "intensity": 0.3,
+                "sersic_index": 1.0,
+                "centre": {
+                    "type": "tuple",
+                    "values": [
+                        0.0,
+                        0.0
+                    ]
+                },
+                "effective_radius": 3.0
+            }
+        }
+    }
+}
