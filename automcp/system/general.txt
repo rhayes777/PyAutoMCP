@@ -102,3 +102,5 @@ Here is an example of a tracer component with no galaxies:
         "galaxies": []
     }
 }
+
+Always use the get_profile_example tool before constructing a component to ensure you have the correct profile structure.
