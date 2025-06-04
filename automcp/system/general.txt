@@ -8,12 +8,16 @@ The AutoLens server provides tools for interaction with the AutoLens library, al
 
 A dataset is referenced by a path to a directory on the filesystem. This variable is always called `dataset_path`.
 
+A Component might represent an instance of a galaxy, a light profile, a mass profile, or any other element in the lensing system.
+
 A Component can be described by a dictionary with the following keys:
 - 'type': The type of the component
 - 'arguments': A dictionary of arguments for the component
 
-A Component might represent an instance of a galaxy, a light profile, a mass profile, or any other element in the
-lensing system.
+The `type` will usually be 'instance' or 'model'. 'instance' refers to a specific realization of a component, while 'model'
+refers to a representation of a component with free parameters that may be optimized over.
+
+If the `type` is 'instance' then `class_path` must be given to indicate the class of the component, and `arguments` must be a dictionary of arguments for that instance.
 
 The component resource provides a menu of components that can be used in the AutoLens library.
 
