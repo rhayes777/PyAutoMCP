@@ -26,6 +26,7 @@ def dataset_from_path(dataset_path: str):
 def add(mcp_server: FastMCP):
     mcp_server.add_tool(visualize_dataset)
     mcp_server.add_tool(visualize_grid)
+    mcp_server.add_tool(visualize_light_profile)
 
 
 async def visualize_dataset(

@@ -14,3 +14,12 @@ A Component can be described by a dictionary with the following keys:
 
 A Component might represent an instance of a galaxy, a light profile, a mass profile, or any other element in the
 lensing system.
+
+The component resource provides a menu of components that can be used in the AutoLens library.
+
+Each component has four fields:
+
+model - this is an example of how that component can be represented as a model.
+instance - this is an example of how that component can be represented as an instance.
+doc - describes the component and its usage.
+name - the name of the component.
