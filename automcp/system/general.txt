@@ -88,3 +88,17 @@ Here is an example of a galaxy component with a bulge and a disk light profile:
         }
     }
 }
+
+A tracer is a component that represents a lensing system, which can include multiple galaxies and their associated light and mass profiles.
+
+The tracer has an argument 'galaxies' which is a list of galaxies in the lensing system.
+
+Here is an example of a tracer component with no galaxies:
+
+{
+    "type": "instance",
+    "class_path": "autolens.lens.tracer.Tracer",
+    "arguments": {
+        "galaxies": []
+    }
+}
