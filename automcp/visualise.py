@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastmcp import FastMCP
 from pydantic import BaseModel
 

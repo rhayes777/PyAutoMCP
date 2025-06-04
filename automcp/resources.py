@@ -123,3 +123,64 @@ async def get_profile_example(
         output.append(to_dict(profile_instance))
 
     return output
+
+
+async def get_galaxy_example() -> list[dict]:
+    """
+    Retrieve example instances of galaxies.
+
+    Returns
+    -------
+    Examples
+        A list of dictionaries representing example instances of galaxies that match the search string.
+    """
+    return [
+        {
+            "type": "instance",
+            "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+            "arguments": {
+                "redshift": 0.5,
+                "bulge": {
+                    "type": "instance",
+                    "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
+                    "arguments": {
+                        "ell_comps": {"type": "tuple", "values": [0.0, 0.111111]},
+                        "intensity": 1.0,
+                        "sersic_index": 2.5,
+                        "centre": {"type": "tuple", "values": [0.0, 0.0]},
+                        "effective_radius": 1.0,
+                    },
+                },
+                "disk": {
+                    "type": "instance",
+                    "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
+                    "arguments": {
+                        "ell_comps": {"type": "tuple", "values": [0.0, 0.3]},
+                        "intensity": 0.3,
+                        "sersic_index": 1.0,
+                        "centre": {"type": "tuple", "values": [0.0, 0.0]},
+                        "effective_radius": 3.0,
+                    },
+                },
+            },
+        }
+    ]
+
+
+def get_tracer_example() -> list[dict]:
+    """
+    Retrieve example instances of tracers.
+
+    Returns
+    -------
+    Examples
+        A list of dictionaries representing example instances of tracers.
+    """
+
+    return [
+        {
+            "type": "instance",
+            "class_path": "autolens.lens.tracer.Tracer",
+            "arguments": {"galaxies": []},
+        }
+    ]
