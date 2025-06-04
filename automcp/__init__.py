@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from automcp import optimisation, resources, dataset
+from automcp import optimisation, resources, visualise
 from mcp.server.fastmcp import FastMCP
 
 system_dir = Path(__file__).parent / "system"
@@ -13,4 +13,4 @@ mcp = FastMCP(
 # aggregate.add_tools(mcp)
 # optimisation.add(mcp)
 resources.add(mcp)
-dataset.add(mcp)
+visualise.add(mcp)
