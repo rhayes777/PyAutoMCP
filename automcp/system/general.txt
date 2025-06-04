@@ -7,3 +7,10 @@ The AutoLens server provides tools for interaction with the AutoLens library, al
 - **Visualization**: Visualize lensing models and data to aid in interpretation and understanding.
 
 A dataset is referenced by a path to a directory on the filesystem. This variable is always called `dataset_path`.
+
+A Component can be described by a dictionary with the following keys:
+- 'type': The type of the component
+- 'arguments': A dictionary of arguments for the component
+
+A Component might represent an instance of a galaxy, a light profile, a mass profile, or any other element in the
+lensing system.

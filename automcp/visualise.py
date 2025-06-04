@@ -1,9 +1,16 @@
+from typing import Optional
+
 from fastmcp import FastMCP
+from pydantic import BaseModel
+
 import autolens as al
 from pathlib import Path
 import autolens.plot as aplt
 
 import pydantic
+
+from autoconf import cached_property
+from autoconf.dictable import from_dict
 
 
 def dataset_from_path(dataset_path: str):
@@ -52,6 +59,18 @@ class UniformGrid2D(pydantic.BaseModel):
     shape_native: tuple[int, int]
     pixel_scales: float
 
+    model_config = {"ignored_types": (cached_property,)}
+
+    @cached_property
+    def instance(self):
+        """
+        Create a uniform grid based on the shape and pixel scales.
+        """
+        return al.Grid2D.uniform(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+        )
+
 
 async def visualize_grid(
     grid: UniformGrid2D,
@@ -67,10 +86,53 @@ async def visualize_grid(
     title
         The title of the plot.
     """
-    grid = al.Grid2D.uniform(
-        shape_native=grid.shape_native,
-        pixel_scales=grid.pixel_scales,
-    )
+    grid = grid.instance
     grid_plotter = aplt.Grid2DPlotter(grid=grid)
     grid_plotter.set_title(title)
     grid_plotter.figure_2d()
+
+
+class Component(BaseModel):
+    type: str
+    class_path: Optional[str] = None
+    arguments: dict
+
+    model_config = {"ignored_types": (cached_property,)}
+
+    @cached_property
+    def instance(self):
+        return from_dict(
+            {
+                "type": self.type,
+                "class_path": self.class_path,
+                "arguments": self.arguments,
+            }
+        )
+
+
+async def visualize_light_profile(
+    light_profile: Component,
+    grid: UniformGrid2D,
+    title: str = "Light Profile Visualization",
+):
+    """
+    Visualize a light profile.
+
+    Parameters
+    ----------
+    light_profile
+        A Model describing an instance of a light profile.
+    grid
+        The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
+        Reasonable values for shape_native are (100, 100) or (200, 200) with pixel_scales of 0.1.
+    title
+        The title of the plot.
+    """
+    light_profile = light_profile.instance
+    image = light_profile.image_2d_from(grid=grid.instance)
+
+    array_plotter = aplt.Array2DPlotter(
+        array=image,
+    )
+    array_plotter.set_title(title)
+    array_plotter.figure_2d()
