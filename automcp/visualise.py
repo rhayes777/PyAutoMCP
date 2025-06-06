@@ -20,6 +20,7 @@ def add(mcp_server: FastMCP):
     mcp_server.add_tool(visualize_dataset)
     mcp_server.add_tool(visualize_grid)
     mcp_server.add_tool(visualize_instance)
+    mcp_server.add_tool(visualise_mass_profile)
 
 
 async def visualize_dataset(
@@ -72,7 +73,7 @@ async def visualize_instance(
         A Component instance containing the type and arguments for the object to visualize.
     grid
         The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
-        Reasonable values for shape_native are (100, 100) or (200, 200) with pixel_scales of 0.1.
+        Reasonable values for shape_native are (50, 50) with pixel_scales of 0.02.
     title
         The title of the plot.
     """
@@ -84,3 +85,39 @@ async def visualize_instance(
     )
     array_plotter.set_title(title)
     array_plotter.figure_2d()
+
+
+async def visualise_mass_profile(
+    instance: Instance,
+    grid: UniformGrid2D,
+    title: str = "Mass Profile Visualization",
+):
+    """
+    Visualize a mass profile on a grid.
+
+    Parameters
+    ----------
+    instance
+        A Component instance containing the type and arguments for the mass profile to visualize.
+    grid
+        The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
+        Reasonable values for shape_native are (50, 50) with pixel_scales of 0.02.
+    title
+        The title of the plot.
+
+    Returns
+    -------
+    Displays the deflections of the mass profile on the specified grid.
+    """
+    mass_profile_plotter = aplt.MassProfilePlotter(
+        mass_profile=instance.instance,
+        grid=grid.instance,
+    )
+    mass_profile_plotter.figures_2d(
+        deflections_y=True,
+        deflections_x=True,
+        convergence=True,
+        potential=True,
+        magnification=True,
+        title_suffix=title,
+    )
