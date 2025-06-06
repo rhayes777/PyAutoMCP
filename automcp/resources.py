@@ -8,7 +8,7 @@ from autogalaxy.profiles.mass import MassProfile
 
 def add(mcp: FastMCP):
     mcp.add_tool(get_profile_example)
-    mcp.add_tool(get_profile_names)
+    mcp.add_tool(get_profile_info)
 
 
 class ProfileFinder:
@@ -51,14 +51,26 @@ class ProfileFinder:
         """
         return [cls.__name__ for cls in self._classes]
 
+    @property
+    def all_classes(self) -> list[type]:
+        """
+        Get all profile classes.
+
+        Returns
+        -------
+        list[type]
+            A list of all profile classes.
+        """
+        return self._classes
+
 
 light_profile_finder = ProfileFinder(al.LightProfile)
 mass_profile_finder = ProfileFinder(MassProfile)
 
 
-async def get_profile_names(profile_type: Literal["light", "mass"]) -> list[str]:
+async def get_profile_info(profile_type: Literal["light", "mass"]) -> list[dict]:
     """
-    Get the names of all available light or mass profile classes.
+    Get the names and descriptions of all available light or mass profile classes.
 
     Parameters
     ----------
@@ -77,7 +89,13 @@ async def get_profile_names(profile_type: Literal["light", "mass"]) -> list[str]
     else:
         raise ValueError("profile_type must be either 'light' or 'mass'.")
 
-    return finder.all_names
+    return [
+        {
+            "name": cls.__name__,
+            "description": cls.__doc__ or "No description available.",
+        }
+        for cls in finder.all_classes
+    ]
 
 
 async def get_profile_example(
