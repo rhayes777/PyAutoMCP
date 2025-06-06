@@ -1,14 +1,9 @@
 from fastmcp import FastMCP
-from pydantic import BaseModel
-
 import autolens as al
 from pathlib import Path
 import autolens.plot as aplt
 
-import pydantic
-
-from autoconf import cached_property
-from autoconf.dictable import from_dict
+from automcp.schema import UniformGrid2D, Instance
 
 
 def dataset_from_path(dataset_path: str):
@@ -43,34 +38,6 @@ async def visualize_dataset(
     dataset_plotter.figures_2d(data=True)
 
 
-class UniformGrid2D(pydantic.BaseModel):
-    """
-    A uniform 2D grid used for visualization in AutoLens.
-
-    Attributes
-    ----------
-    shape_native : tuple
-        The shape of the grid in native pixel coordinates.
-    pixel_scales : float
-        The scale of each pixel in arc-seconds.
-    """
-
-    shape_native: tuple[int, int]
-    pixel_scales: float
-
-    model_config = {"ignored_types": (cached_property,)}
-
-    @cached_property
-    def instance(self):
-        """
-        Create a uniform grid based on the shape and pixel scales.
-        """
-        return al.Grid2D.uniform(
-            shape_native=self.shape_native,
-            pixel_scales=self.pixel_scales,
-        )
-
-
 async def visualize_grid(
     grid: UniformGrid2D,
     title: str = "Uniform Grid of Coordinates",
@@ -89,28 +56,6 @@ async def visualize_grid(
     grid_plotter = aplt.Grid2DPlotter(grid=grid)
     grid_plotter.set_title(title)
     grid_plotter.figure_2d()
-
-
-class Component(BaseModel):
-    type: str
-    arguments: dict
-
-    model_config = {"ignored_types": (cached_property,)}
-
-    @cached_property
-    def instance(self):
-        return from_dict(
-            {
-                "type": self.type,
-                "class_path": self.class_path,
-                "arguments": self.arguments,
-            }
-        )
-
-
-class Instance(Component):
-    class_path: str
-    type: str = "instance"
 
 
 async def visualize_instance(
