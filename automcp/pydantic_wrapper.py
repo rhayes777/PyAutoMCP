@@ -34,7 +34,11 @@ def pydantic_from_class(
         base_config["model_config"] = ConfigDict(
             **(extra_config | {"arbitrary_types_allowed": True})
         )
-    DynamicBase = type(base_name, (BaseModel, cls), base_config)
+    Base = (
+        cls
+        if issubclass(cls, BaseModel)
+        else type(base_name, (BaseModel, cls), base_config)
+    )
 
     # 2) Collect fields from annotations on the original class
     annotations = get_type_hints(cls.__init__, include_extras=True)
@@ -48,7 +52,7 @@ def pydantic_from_class(
 
     return create_model(
         f"{cls.__name__}Model",
-        __base__=DynamicBase,
+        __base__=Base,
         __module__=cls.__module__,
         __doc__=cls.__doc__,
         **fields,
