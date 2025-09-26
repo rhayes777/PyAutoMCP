@@ -203,7 +203,3 @@ def get_tracer_example() -> list[dict]:
             "arguments": {"galaxies": []},
         }
     ]
-
-
-for cls in light_profile_finder.all_classes:
-    print(pydantic_from_class(cls))
