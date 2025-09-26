@@ -4,6 +4,7 @@ from mcp.server import FastMCP
 import autolens as al
 from autoconf.dictable import to_dict
 from autogalaxy.profiles.mass import MassProfile
+from automcp.pydantic_wrapper import pydantic_from_class
 
 
 def add(mcp: FastMCP):
@@ -202,3 +203,7 @@ def get_tracer_example() -> list[dict]:
             "arguments": {"galaxies": []},
         }
     ]
+
+
+for cls in light_profile_finder.all_classes:
+    print(pydantic_from_class(cls))
