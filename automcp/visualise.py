@@ -1,3 +1,5 @@
+import uuid
+
 from fastmcp import FastMCP
 from mcp.server.fastmcp import Image
 
@@ -61,6 +63,16 @@ async def visualize_grid(
     grid_plotter.figure_2d()
 
 
+def _make_output():
+    filename = uuid.uuid4().hex[:6]
+
+    return aplt.Output(
+        path=Path("/tmp"),
+        filename=filename,
+        format="png",
+    )
+
+
 async def visualize_instance(
     instance: Instance,
     grid: UniformGrid2D,
@@ -82,11 +94,7 @@ async def visualize_instance(
     instance = instance.instance
     image = instance.image_2d_from(grid=grid.instance)
 
-    output = aplt.Output(
-        path=Path("/tmp"),
-        filename="example",
-        format="png",
-    )
+    output = _make_output()
 
     mat_plot = aplt.MatPlot2D(output=output)
 
@@ -97,7 +105,7 @@ async def visualize_instance(
     array_plotter.set_title(title)
     array_plotter.figure_2d()
 
-    return Image(path="/tmp/example.png")
+    return Image(path=f"/tmp/{output.filename}.png")
 
 
 async def visualise_mass_profile(
@@ -122,9 +130,14 @@ async def visualise_mass_profile(
     -------
     Displays the deflections of the mass profile on the specified grid.
     """
+    output = _make_output()
+
+    mat_plot = aplt.MatPlot2D(output=output)
+
     mass_profile_plotter = aplt.MassProfilePlotter(
         mass_profile=instance.instance,
         grid=grid.instance,
+        mat_plot_2d=mat_plot,
     )
     mass_profile_plotter.figures_2d(
         deflections_y=True,
@@ -134,3 +147,5 @@ async def visualise_mass_profile(
         magnification=True,
         title_suffix=title,
     )
+
+    return Image(path=f"/tmp/{output.filename}.png")
