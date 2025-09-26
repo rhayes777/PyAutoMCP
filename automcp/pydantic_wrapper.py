@@ -1,9 +1,13 @@
+import operator
+
+from functools import reduce
+
 from typing import Any, Literal, get_type_hints, Annotated
 from pydantic import BaseModel, create_model, Field
 from pydantic.config import ConfigDict
 
 
-DISCRIMINATOR = "_automcp_model_type"
+DISCRIMINATOR = "automcp_model_type"
 
 
 def pydantic_from_class(
@@ -63,12 +67,8 @@ def make_discriminated_union(
     for cls in classes:
         models[cls] = pydantic_from_class(cls)
 
-    union_type = Annotated[
-        tuple(models.values())[0] | tuple(models.values())[1]
-        if len(models) == 2
-        else eval(
-            " | ".join(m.__name__ for m in models.values()), models
-        ),  # trick for arbitrary union
-        Field(discriminator=DISCRIMINATOR),
-    ]
-    return union_type
+    # Build a runtime union type without eval
+    model_types = list(models.values())
+    union_type = reduce(operator.or_, model_types[1:], model_types[0])
+
+    return Annotated[union_type, Field(discriminator=DISCRIMINATOR)]
