@@ -1,4 +1,6 @@
 from fastmcp import FastMCP
+from mcp.server.fastmcp import Image
+
 import autolens as al
 from pathlib import Path
 import autolens.plot as aplt
@@ -80,11 +82,22 @@ async def visualize_instance(
     instance = instance.instance
     image = instance.image_2d_from(grid=grid.instance)
 
+    output = aplt.Output(
+        path=Path("/tmp"),
+        filename="example",
+        format="png",
+    )
+
+    mat_plot = aplt.MatPlot2D(output=output)
+
     array_plotter = aplt.Array2DPlotter(
         array=image,
+        mat_plot_2d=mat_plot,
     )
     array_plotter.set_title(title)
     array_plotter.figure_2d()
+
+    return Image(path="/tmp/example.png")
 
 
 async def visualise_mass_profile(
