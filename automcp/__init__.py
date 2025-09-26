@@ -12,6 +12,6 @@ mcp = FastMCP(
 
 # aggregate.add_tools(mcp)
 # optimisation.add(mcp)
-resources.add(mcp)
+# resources.add(mcp)
 visualise.add(mcp)
 compute.add(mcp)

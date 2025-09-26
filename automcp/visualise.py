@@ -1,3 +1,5 @@
+from typing import Union
+
 import uuid
 
 from fastmcp import FastMCP
@@ -6,6 +8,9 @@ from mcp.server.fastmcp import Image
 import autolens as al
 from pathlib import Path
 import autolens.plot as aplt
+from automcp.pydantic_wrapper import pydantic_from_class
+from automcp.resources import ProfileFinder
+from autogalaxy.profiles.mass import MassProfile
 
 from automcp.schema import UniformGrid2D, Instance
 
@@ -73,6 +78,26 @@ def _make_output():
     )
 
 
+light_profile_finder = ProfileFinder(al.LightProfile)
+mass_profile_finder = ProfileFinder(MassProfile)
+
+light_profiles = list(
+    map(
+        pydantic_from_class,
+        light_profile_finder.all_classes,
+    )
+)
+mass_profiles = list(
+    map(
+        pydantic_from_class,
+        mass_profile_finder.all_classes,
+    )
+)
+
+PydanticLightProfile = Union[tuple(light_profiles)]
+PydanticMassProfile = Union[tuple(mass_profiles)]
+
+
 async def visualize_instance(
     instance: Instance,
     grid: UniformGrid2D,
@@ -109,7 +134,7 @@ async def visualize_instance(
 
 
 async def visualise_mass_profile(
-    instance: Instance,
+    mass_profile: PydanticMassProfile,
     grid: UniformGrid2D,
     title: str = "Mass Profile Visualization",
 ):
@@ -118,8 +143,8 @@ async def visualise_mass_profile(
 
     Parameters
     ----------
-    instance
-        A Component instance containing the type and arguments for the mass profile to visualize.
+    mass_profile
+        A mass profile to visualize.
     grid
         The grid to visualize, specified as a UniformGrid2D object with shape_native and pixel_scales.
         Reasonable values for shape_native are (50, 50) with pixel_scales of 0.02.
@@ -135,7 +160,7 @@ async def visualise_mass_profile(
     mat_plot = aplt.MatPlot2D(output=output)
 
     mass_profile_plotter = aplt.MassProfilePlotter(
-        mass_profile=instance.instance,
+        mass_profile=mass_profile,
         grid=grid.instance,
         mat_plot_2d=mat_plot,
     )
