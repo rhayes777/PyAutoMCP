@@ -1,6 +1,9 @@
-from typing import Any, Literal, get_type_hints
-from pydantic import BaseModel, create_model
+from typing import Any, Literal, get_type_hints, Annotated
+from pydantic import BaseModel, create_model, Field
 from pydantic.config import ConfigDict
+
+
+DISCRIMINATOR = "_automcp_model_type"
 
 
 def pydantic_from_class(
@@ -37,7 +40,7 @@ def pydantic_from_class(
         fields[name] = (typ, default)
 
     literal_value = f"{cls.__module__}.{cls.__name__}"
-    fields["_automcp_model_type"] = (Literal[literal_value], literal_value)
+    fields[DISCRIMINATOR] = (Literal[literal_value], literal_value)
 
     return create_model(
         f"{cls.__name__}Model",
@@ -46,3 +49,26 @@ def pydantic_from_class(
         __doc__=cls.__doc__,
         **fields,
     )
+
+
+def make_discriminated_union(
+    classes: list[type],
+):
+    """
+    Build Pydantic models from a list of plain classes and return:
+      - models: {cls -> GeneratedModel}
+      - union_type: Annotated[Union[...], Field(discriminator=...)]
+    """
+    models: dict[type, type[BaseModel]] = {}
+    for cls in classes:
+        models[cls] = pydantic_from_class(cls)
+
+    union_type = Annotated[
+        tuple(models.values())[0] | tuple(models.values())[1]
+        if len(models) == 2
+        else eval(
+            " | ".join(m.__name__ for m in models.values()), models
+        ),  # trick for arbitrary union
+        Field(discriminator=DISCRIMINATOR),
+    ]
+    return union_type

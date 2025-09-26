@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Annotated
 
 import uuid
 
@@ -8,7 +8,7 @@ from mcp.server.fastmcp import Image
 import autolens as al
 from pathlib import Path
 import autolens.plot as aplt
-from automcp.pydantic_wrapper import pydantic_from_class
+from automcp.pydantic_wrapper import pydantic_from_class, make_discriminated_union
 from automcp.resources import ProfileFinder
 from autogalaxy.profiles.mass import MassProfile
 
@@ -81,21 +81,9 @@ def _make_output():
 light_profile_finder = ProfileFinder(al.LightProfile)
 mass_profile_finder = ProfileFinder(MassProfile)
 
-light_profiles = list(
-    map(
-        pydantic_from_class,
-        light_profile_finder.all_classes,
-    )
-)
-mass_profiles = list(
-    map(
-        pydantic_from_class,
-        mass_profile_finder.all_classes,
-    )
-)
 
-PydanticLightProfile = Union[tuple(light_profiles)]
-PydanticMassProfile = Union[tuple(mass_profiles)]
+PydanticLightProfile = make_discriminated_union(light_profile_finder.all_classes)
+PydanticMassProfile = make_discriminated_union(mass_profile_finder.all_classes)
 
 
 async def visualize_instance(
